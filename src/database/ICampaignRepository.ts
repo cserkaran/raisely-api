@@ -3,11 +3,14 @@ import { Donation } from "../models/Donation";
 import { Profile } from "../models/Profile";
 
 export interface ICampaignRepository {
-    getAllProfiles(): Promise<Array<Profile> | null>;
+    
+    getProfile(profileId: uuidv4): Promise<Profile | null>;
 
-    getProfileDonations(profileId: uuidv4): Array<Donation>;
+    getAllProfiles(): Promise<Array<Profile>>;
 
-    submitProfileDonation(donation: Donation): Promise<Donation>;
+    getProfileDonations(profileId: uuidv4): Promise<Array<Donation>>;
+
+    submitProfileDonation(donation: Donation): Promise<Donation | null>;
 
     submitCampaignDonation(donation: Donation): Promise<Donation | null>;
   }

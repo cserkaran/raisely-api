@@ -20,6 +20,18 @@ export class CampaignRoute {
       this.campaignController.getAllProfiles.bind(this.campaignController)
     );
 
+    router.get("/profiles/:profile/donations",
+      this.campaignController.getProfileDonations.bind(this.campaignController)
+    );
+
+    router.post("/profiles/:profile/donations",
+      this.campaignController.submitProfileDonations.bind(this.campaignController)
+    );
+
+    router.post("/donations",
+      this.campaignController.submitCampaignDonations.bind(this.campaignController)
+    );
+
     return router;
   }
 }

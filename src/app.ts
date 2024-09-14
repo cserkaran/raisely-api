@@ -3,8 +3,10 @@ import express from 'express';
 import { CampaignController } from './controllers/CampaignController';
 import { CampaignRoute } from './routes/CampaignRoutes';
 import { CampaignService } from './services/CampaignService';
+import { CampaignRepository } from './database/CampaignRepository';
 
-const campaignService = new CampaignService();
+const campaignRepository = new CampaignRepository();
+const campaignService = new CampaignService(campaignRepository);
 const campaignController = new CampaignController(campaignService);
 const campaignRoute = new CampaignRoute(campaignController);
 
