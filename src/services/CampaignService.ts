@@ -12,6 +12,11 @@ export class CampaignService {
   }
 
    // Fetch all profiles
+   public async getProfile(profileId: uuidv4): Promise<Profile | null> {
+    return this.campaignRepository.getProfile(profileId);
+ }
+
+   // Fetch all profiles
   public async getAllProfiles(): Promise<Array<Profile>> {
      return this.campaignRepository.getAllProfiles();
   }

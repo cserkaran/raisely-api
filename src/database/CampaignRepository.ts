@@ -4,16 +4,20 @@ import { Profile } from '../models/Profile';
 import { ICampaignRepository } from './ICampaignRepository';
 
 export class CampaignRepository implements ICampaignRepository {
-
-  profiles = new Array<Profile>();
-  donations = new Array<Donation>();
+  private readonly profiles : Array<Profile>;
+  private readonly donations: Array<Donation>
+   
+  constructor(){
+    this.profiles = new Array<Profile>();
+    this.donations = new Array<Donation>();
+  }  
 
   public async getProfile(profileId: uuidv4): Promise<Profile | null> {
      let profile = this.profiles.find(p => p.id == profileId);
      if(profile == undefined) { 
         profile = null;
      }
-     return profile;
+    return profile;
   }
 
   public async getAllProfiles(): Promise<Array<Profile>> {
@@ -24,11 +28,15 @@ export class CampaignRepository implements ICampaignRepository {
      return this.donations;
   }
 
-  public async submitProfileDonation(donation: Donation): Promise<Donation> {
-    throw new Error('Method not implemented.');
+  public async addProfile(profile: Profile): Promise<Profile | null> {
+      profile.id = uuidv4();
+      this.profiles.push(profile);
+      return profile;
   }
 
-  public async submitCampaignDonation(donation: Donation): Promise<Donation | null> {
-    throw new Error('Method not implemented.');
+  public async addDonation(donation: Donation): Promise<Donation | null> {
+     donation.id = uuidv4();
+     this.donations.push(donation);
+     return donation;
   }
 }

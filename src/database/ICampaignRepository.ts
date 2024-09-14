@@ -10,7 +10,7 @@ export interface ICampaignRepository {
 
     getProfileDonations(profileId: uuidv4): Promise<Array<Donation>>;
 
-    submitProfileDonation(donation: Donation): Promise<Donation | null>;
-
-    submitCampaignDonation(donation: Donation): Promise<Donation | null>;
+    addProfile(profile: Profile): Promise<Profile | null>;
+    
+    addDonation(donation: Donation): Promise<Donation | null>;
   }

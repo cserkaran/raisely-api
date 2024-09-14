@@ -4,20 +4,24 @@ import { Profile } from '../models/Profile';
 import { Donation } from '../models/Donation';
 import { CampaignService } from '../services/CampaignService';
 
-interface IProfilesResBody {
+interface IProfilesResultBody {
   profiles: Array<Profile>;
 }
 
-interface IDonationsResBody {
-  donations: Array<Donation>;
+interface IProfileResultBody {
+  profile: Profile;
 }
 
-interface ISubmitDonationReqBody {
+interface IDonationResultBody {
   donation: Donation;
 }
 
-interface IGetProfileDonationsRequestBody{
-  profileId: uuidv4
+interface IDonationsResultBody {
+  donations: Array<Donation>;
+}
+
+interface ISubmitDonationRequestBody {
+  donation: Donation;
 }
 
 export class CampaignController {
@@ -27,7 +31,10 @@ export class CampaignController {
     this.campaignService = campaignService;
   }
 
-  public async getAllProfiles(req: Request, res: Response<IProfilesResBody>): Promise<void> {
+  public async getAllProfiles(
+    req: Request,
+    res: Response<IProfilesResultBody>
+  ): Promise<void> {
     const profiles = await this.campaignService.getAllProfiles();
     res.json({
       profiles: profiles,
@@ -35,29 +42,37 @@ export class CampaignController {
   }
 
   public async getProfileDonations(
-    req: Request,
-    res: Response<IDonationsResBody>
-  ): Promise<void>{
-
-    const { profile } = req.params;
+    req: Request<{ profile: uuidv4 }>,
+    res: Response<IDonationsResultBody>
+  ): Promise<void> {
+    const profile = req.params.profile;
     const donations = await this.campaignService.getProfileDonations(profile);
     res.json({
       donations: donations,
     });
   }
 
-  submitProfileDonations(
-    req: Request,
-    res: Response
-  ): void{
-  
-      
+  public async submitProfileDonations(
+    req: Request<{ profile: uuidv4 }, {}, ISubmitDonationRequestBody>,
+    res: Response<IDonationResultBody | { error: string }>
+  ): Promise<void> {
+    const profile = req.params.profile;
+    const profileObj = await this.campaignService.getProfile(profile);
+    if (!profileObj) {
+      res.status(404).json({ error: 'Profile not found' });
+      return;
+    }
+    
+    const donation = req.body.donation;
+    donation.profileId = profile;
+
+    const newDonation =
+      await this.campaignService.submitProfileDonation(donation);
+
+    res.json({
+      donation: newDonation,
+    });
   }
 
-  submitCampaignDonations(
-    req: Request,
-    res: Response
-  ): void{
-  
-  }
+  submitCampaignDonations(req: Request, res: Response): void {}
 }
