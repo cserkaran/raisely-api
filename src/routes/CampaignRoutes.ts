@@ -20,16 +20,37 @@ export class CampaignRoute {
       this.campaignController.getAllProfiles.bind(this.campaignController)
     );
 
-    router.get("/profiles/:profile/donations",
+    router.post(
+      '/profiles',
+      this.campaignController.createCampaignProfile.bind(
+        this.campaignController
+      )
+    );
+
+    router.post(
+      '/profiles/:profile',
+      this.campaignController.createIndividualProfile.bind(
+        this.campaignController
+      )
+    );
+
+    router.get(
+      '/profiles/:profile/donations',
       this.campaignController.getProfileDonations.bind(this.campaignController)
     );
 
-    router.post("/profiles/:profile/donations",
-      this.campaignController.submitProfileDonations.bind(this.campaignController)
+    router.post(
+      '/profiles/:profile/donations',
+      this.campaignController.submitProfileDonations.bind(
+        this.campaignController
+      )
     );
 
-    router.post("/donations",
-      this.campaignController.submitCampaignDonations.bind(this.campaignController)
+    router.post(
+      '/:campaign/donations',
+      this.campaignController.submitCampaignDonations.bind(
+        this.campaignController
+      )
     );
 
     return router;

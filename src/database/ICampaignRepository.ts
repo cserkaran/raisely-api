@@ -4,7 +4,9 @@ import { Profile } from "../models/Profile";
 
 export interface ICampaignRepository {
     
-    getProfile(profileId: uuidv4): Promise<Profile | null>;
+    getProfileById(profileId: uuidv4): Promise<Profile | null>;
+
+    getProfileByName(name: string): Promise<Profile | null>;
 
     getAllProfiles(): Promise<Array<Profile>>;
 
