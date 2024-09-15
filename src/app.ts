@@ -1,3 +1,4 @@
+// The main wiring of the express app.
 import express, { Request, Response, NextFunction } from 'express';
 
 import { CampaignController } from './controllers/CampaignController';

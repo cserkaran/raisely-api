@@ -3,6 +3,8 @@ import { Donation } from '../models/Donation';
 import { ICampaignRepository } from '../database/ICampaignRepository';
 import { IErrorResponse } from '../models/ResponseBodies';
 
+// Contains methods for business logic. It calls the data access layer(Repository) 
+// and model layer to perform data operations. 
 export class CampaignService {
   private campaignRepository: ICampaignRepository;
   private exchangeRates: ExchangeRateData = {
@@ -12,12 +14,13 @@ export class CampaignService {
       EUR: 1.18,
     },
   };
-
+  
+  // Class Constructor
   constructor(campaignRepository: ICampaignRepository) {
     this.campaignRepository = campaignRepository;
   }
 
-  // create profile.
+  // Create profile for fundraising
   public async createProfile(
     profile: Profile
   ): Promise<Profile | IErrorResponse> {
@@ -42,30 +45,30 @@ export class CampaignService {
       currency: currency,
     };
 
-    const result = await this.campaignRepository.addProfile(newProfile);
+    const result = await this.campaignRepository.createProfile(newProfile);
     return result as Profile;
   }
 
-  // Fetch profile by id
+  // Get all the fundraising profiles
   public async getProfileById(
     profileId: string | null
   ): Promise<Profile | null> {
     return this.campaignRepository.getProfileById(profileId);
   }
 
-  // Fetch all profiles
+  // Get all the fundraising profiles
   public async getAllProfiles(): Promise<Array<Profile>> {
     return this.campaignRepository.getAllProfiles();
   }
 
-  // Fetch donations for a profile
+  // Get a single profile's donations
   public async getProfileDonations(
     profileId: string
   ): Promise<Array<Donation>> {
     return this.campaignRepository.getProfileDonations(profileId);
   }
 
-  // Submit a donation to a specific profile
+  // Submit a new donation to the profile with the given Profile ID
   public async submitProfileDonation(
     profileId: string,
     donation: Donation
@@ -88,7 +91,7 @@ export class CampaignService {
       profileId: profileId,
     };
 
-    const result = await this.campaignRepository.addDonation(newDonation);
+    const result = await this.campaignRepository.createDonation(newDonation);
 
     // Update profile total and parent profiles' totals
     let currentProfile: Profile | null;
@@ -103,7 +106,7 @@ export class CampaignService {
     return result as Donation;
   }
 
-  // Submit a donation to the campaign (root profile)
+   // Submit a new donation to the overall campaign(root profile)
   public async submitCampaignDonation(
     donation: Donation
   ): Promise<Donation | IErrorResponse> {
@@ -126,7 +129,7 @@ export class CampaignService {
       profileId: rootProfile.id,
     };
 
-    const result = await this.campaignRepository.addDonation(newDonation);
+    const result = await this.campaignRepository.createDonation(newDonation);
     return donation;
   }
 }

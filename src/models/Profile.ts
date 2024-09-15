@@ -1,3 +1,4 @@
+// Shape of Fundraising profile
 export interface Profile {
   id: string; // ID of the profile
   name: string; // Display name of the profile

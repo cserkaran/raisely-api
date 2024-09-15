@@ -1,3 +1,4 @@
+// The shape of the Donation to a fundraising profile.
 export interface Donation {
   id: string; // ID of the donation
   donorName: string; // Full name of the donor

@@ -15,13 +15,17 @@ import {
 } from '../models/RequestBodies';
 import { isErrorReponse } from '../helpers/typepredicates';
 
+// An MVC Controller(Model-View-Controller) for handling
+// request and response logic for the applications routes.
 export class CampaignController {
   private campaignService: CampaignService;
 
+  // Class Constructor
   constructor(campaignService: CampaignService) {
     this.campaignService = campaignService;
   }
 
+  // Create profile for fundraising
   public async createProfile(
     req: Request<{}, {}, ICreateProfileRequestBody>,
     res: Response<IProfileResultBody | IErrorMessage>
@@ -38,6 +42,7 @@ export class CampaignController {
     }
   }
 
+  // Get all the fundraising profiles
   public async getAllProfiles(
     req: Request,
     res: Response<IProfilesResultBody>
@@ -48,6 +53,7 @@ export class CampaignController {
     });
   }
 
+  // Get a single profile's donations
   public async getProfileDonations(
     req: Request<IGetProfileRequestBody>,
     res: Response<IDonationsResultBody>
@@ -59,6 +65,7 @@ export class CampaignController {
     });
   }
 
+  // Submit a new donation to the profile with the given Profile ID
   public async submitProfileDonation(
     req: Request<IGetProfileRequestBody, {}, ISubmitDonationRequestBody>,
     res: Response<IDonationResultBody | IErrorMessage>
@@ -78,6 +85,7 @@ export class CampaignController {
     }
   }
 
+  // Submit a new donation to the overall campaign(root profile)
   public async submitCampaignDonation(
     req: Request<{}, {}, ISubmitDonationRequestBody>,
     res: Response<IDonationResultBody | IErrorMessage>

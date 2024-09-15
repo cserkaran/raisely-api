@@ -1,3 +1,4 @@
+// Script to the start the app.
 import app from './app';
 
 const port = 8000;
