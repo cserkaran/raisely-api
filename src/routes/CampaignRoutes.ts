@@ -22,16 +22,7 @@ export class CampaignRoute {
 
     router.post(
       '/profiles',
-      this.campaignController.createCampaignProfile.bind(
-        this.campaignController
-      )
-    );
-
-    router.post(
-      '/profiles/:profile',
-      this.campaignController.createIndividualProfile.bind(
-        this.campaignController
-      )
+      this.campaignController.createProfile.bind(this.campaignController)
     );
 
     router.get(
@@ -41,14 +32,14 @@ export class CampaignRoute {
 
     router.post(
       '/profiles/:profile/donations',
-      this.campaignController.submitProfileDonations.bind(
+      this.campaignController.submitProfileDonation.bind(
         this.campaignController
       )
     );
 
     router.post(
-      '/:campaign/donations',
-      this.campaignController.submitCampaignDonations.bind(
+      '/donations',
+      this.campaignController.submitCampaignDonation.bind(
         this.campaignController
       )
     );

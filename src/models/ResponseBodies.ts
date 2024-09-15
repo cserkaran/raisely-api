@@ -18,6 +18,6 @@ export interface IDonationsResultBody {
 }
 
 export interface IErrorResponse {
-  statusCode? : number;
+  statusCode?: number;
   error: string;
 }

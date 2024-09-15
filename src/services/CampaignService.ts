@@ -16,16 +16,28 @@ export class CampaignService {
     this.campaignRepository = campaignRepository;
   }
 
-  // create root campaign/team profile.
-  public async createCampaignProfile(
+  // create profile.
+  public async createProfile(
     profile: Profile
-  ): Promise<Profile | null> {
-    const { name, total, currency } = profile;
+  ): Promise<Profile | IErrorResponse> {
+    const { name, total, currency, parentId } = profile;
+
+    if (!parentId) {
+      //Check if root profile already exists as we cannot have multiple root profiles.
+      const rootProfile = await this.campaignRepository.getProfileById(null);
+      if (rootProfile) {
+        return {
+          statusCode: 400,
+          error: `Campaign Root Profile already exists`,
+        };
+      }
+    }
+
     const newProfile = {
       id: null, // will be set by database layer.
       name: name,
       total: total,
-      parentId: null, // parent id null for root campaign profile.
+      parentId: parentId,
       currency: currency,
     };
 
@@ -33,26 +45,8 @@ export class CampaignService {
     return result;
   }
 
-  //create individual fundraising profile.
-  public async createIndividualProfile(
-    parent: uuidv4,
-    profile: Profile
-  ): Promise<Profile | null> {
-    const { name, total, currency } = profile;
-    const newProfile = {
-      id: null, // will be set by database layer.
-      name: name,
-      total: total,
-      parentId: parent,
-      currency: currency,
-    };
-
-    const result = await this.campaignRepository.addProfile(newProfile);
-    return result;
-  }
-
-  // Fetch all profiles
-  public async getProfile(profileId: uuidv4): Promise<Profile | null> {
+  // Fetch profile by id
+  public async getProfileById(profileId: uuidv4): Promise<Profile | null> {
     return this.campaignRepository.getProfileById(profileId);
   }
 
@@ -107,16 +101,14 @@ export class CampaignService {
 
   // Submit a donation to the campaign (root profile)
   public async submitCampaignDonation(
-    campaign: string,
     donation: Donation
   ): Promise<Donation | IErrorResponse> {
     const { donorName, amount, currency } = donation;
-    const rootProfile =
-      await this.campaignRepository.getProfileByName(campaign);
+    const rootProfile = await this.campaignRepository.getProfileById(null);
     if (!rootProfile) {
       return {
         statusCode: 404,
-        error: `Campaign Profile with name ${campaign} witnot found`,
+        error: `Campaign Root Profile not found`,
       };
     }
     const donationAmountInUSD = amount * this.exchangeRates[currency];

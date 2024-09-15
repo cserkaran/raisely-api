@@ -13,6 +13,7 @@ import {
   IGetProfileRequestBody,
   ISubmitDonationRequestBody,
 } from '../models/RequestBodies';
+import { isErrorReponse } from '../helpers/typepredicates';
 
 export class CampaignController {
   private campaignService: CampaignService;
@@ -21,21 +22,20 @@ export class CampaignController {
     this.campaignService = campaignService;
   }
 
-  public async createCampaignProfile(
+  public async createProfile(
     req: Request<{}, {}, ICreateProfileRequestBody>,
-    res: Response<IProfileResultBody>
-  ): Promise<void> {
-    const profileId = req.body.profile;
-    await this.campaignService.createCampaignProfile(profileId);
-  }
-
-  public async createIndividualProfile(
-    req: Request<IGetProfileRequestBody, {}, ICreateProfileRequestBody>,
     res: Response<IProfileResultBody | IErrorResponse>
   ): Promise<void> {
-    const parentId = req.params.profile;
     const profile = req.body.profile;
-    await this.campaignService.createIndividualProfile(parentId, profile);
+    const result = await this.campaignService.createProfile(profile);
+
+    if (isErrorReponse(result)) {
+      res.status(result.statusCode).json({ error: result.error });
+    } else {
+      res.json({
+        profile: result,
+      });
+    }
   }
 
   public async getAllProfiles(
@@ -59,7 +59,7 @@ export class CampaignController {
     });
   }
 
-  public async submitProfileDonations(
+  public async submitProfileDonation(
     req: Request<IGetProfileRequestBody, {}, ISubmitDonationRequestBody>,
     res: Response<IDonationResultBody | IErrorResponse>
   ): Promise<void> {
@@ -69,7 +69,7 @@ export class CampaignController {
       profile,
       donation
     );
-    if (this.isErrorReponse(result)) {
+    if (isErrorReponse(result)) {
       res.status(result.statusCode).json({ error: result.error });
     } else {
       res.json({
@@ -78,9 +78,18 @@ export class CampaignController {
     }
   }
 
-  submitCampaignDonations(req: Request, res: Response): void {}
-
-  isErrorReponse(obj: any): obj is IErrorResponse {
-    return 'error' in obj && 'statusCode' in obj;
+  public async submitCampaignDonation(
+    req: Request<{}, {}, ISubmitDonationRequestBody>,
+    res: Response<IDonationResultBody | IErrorResponse>
+  ): Promise<void> {
+    const donation = req.body.donation;
+    const result = await this.campaignService.submitCampaignDonation(donation);
+    if (isErrorReponse(result)) {
+      res.status(result.statusCode).json({ error: result.error });
+    } else {
+      res.json({
+        donation: result,
+      });
+    }
   }
 }
