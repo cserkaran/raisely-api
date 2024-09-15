@@ -1,4 +1,4 @@
-import { uuidv4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { Donation } from '../models/Donation';
 import { Profile } from '../models/Profile';
 import { ICampaignRepository } from './ICampaignRepository';
@@ -12,18 +12,18 @@ export class CampaignRepository implements ICampaignRepository {
     this.donations = new Array<Donation>();
   }
 
-  public async getProfileById(profileId: uuidv4): Promise<Profile | null> {
-    let profile = this.profiles.find((p) => p.id == profileId);
-    if (profile == undefined) {
-      profile = null;
+  public async getRootProfile(): Promise<Profile | null> {
+    let rootProfile = this.profiles.find((p) => p.parentId == null);
+    if (rootProfile == undefined) {
+      return null;
     }
-    return profile;
+    return rootProfile;
   }
 
-  public async getProfileByName(name: string): Promise<Profile | null> {
-    let profile = this.profiles.find((p) => p.name == name);
+  public async getProfileById(profileId: string | null): Promise<Profile | null> {
+    let profile = this.profiles.find((p) => p.id == profileId);
     if (profile == undefined) {
-      profile = null;
+      return null;
     }
     return profile;
   }
@@ -33,9 +33,10 @@ export class CampaignRepository implements ICampaignRepository {
   }
 
   public async getProfileDonations(
-    profileId: uuidv4
+    profileId: string
   ): Promise<Array<Donation>> {
-    return this.donations;
+    const donations = this.donations.filter(d => d.profileId === profileId);
+    return donations;
   }
 
   public async addProfile(profile: Profile): Promise<Profile | null> {

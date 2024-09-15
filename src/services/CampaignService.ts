@@ -1,15 +1,16 @@
 import { Profile } from '../models/Profile';
 import { Donation } from '../models/Donation';
-import { uuidv4 as uuidv4 } from 'uuid';
 import { ICampaignRepository } from '../database/ICampaignRepository';
 import { IErrorResponse } from '../models/ResponseBodies';
 
 export class CampaignService {
   private campaignRepository: ICampaignRepository;
-  private exchangeRates = {
-    USD: 1,
-    AUD: 0.74,
-    EUR: 1.18,
+  private exchangeRates: ExchangeRateData = {
+    rates: {
+      USD: 1,
+      AUD: 0.74,
+      EUR: 1.18,
+    },
   };
 
   constructor(campaignRepository: ICampaignRepository) {
@@ -24,7 +25,7 @@ export class CampaignService {
 
     if (!parentId) {
       //Check if root profile already exists as we cannot have multiple root profiles.
-      const rootProfile = await this.campaignRepository.getProfileById(null);
+      const rootProfile = await this.campaignRepository.getRootProfile();
       if (rootProfile) {
         return {
           statusCode: 400,
@@ -34,7 +35,7 @@ export class CampaignService {
     }
 
     const newProfile = {
-      id: null, // will be set by database layer.
+      id: '', // will be set by database layer.
       name: name,
       total: total,
       parentId: parentId,
@@ -42,11 +43,13 @@ export class CampaignService {
     };
 
     const result = await this.campaignRepository.addProfile(newProfile);
-    return result;
+    return result as Profile;
   }
 
   // Fetch profile by id
-  public async getProfileById(profileId: uuidv4): Promise<Profile | null> {
+  public async getProfileById(
+    profileId: string | null
+  ): Promise<Profile | null> {
     return this.campaignRepository.getProfileById(profileId);
   }
 
@@ -57,14 +60,14 @@ export class CampaignService {
 
   // Fetch donations for a profile
   public async getProfileDonations(
-    profileId: uuidv4
+    profileId: string
   ): Promise<Array<Donation>> {
     return this.campaignRepository.getProfileDonations(profileId);
   }
 
   // Submit a donation to a specific profile
   public async submitProfileDonation(
-    profileId: uuidv4,
+    profileId: string,
     donation: Donation
   ): Promise<Donation | IErrorResponse> {
     const profile = await this.campaignRepository.getProfileById(profileId);
@@ -74,21 +77,22 @@ export class CampaignService {
 
     const { donorName, amount, currency } = donation;
     const donationAmountInProfileCurrency =
-      (amount * this.exchangeRates[currency]) /
-      this.exchangeRates[profile.currency];
+      (amount * this.exchangeRates.rates[currency]) /
+      this.exchangeRates.rates[profile.currency];
 
     const newDonation = {
-      id: null, // will be set by database layer.
+      id: '', // will be set by database layer.
       donorName,
       amount,
       currency,
-      profileId: profile,
+      profileId: profileId,
     };
 
     const result = await this.campaignRepository.addDonation(newDonation);
 
     // Update profile total and parent profiles' totals
-    let currentProfile = profile;
+    let currentProfile: Profile | null;
+    currentProfile = profile;
     while (currentProfile) {
       currentProfile.total += donationAmountInProfileCurrency;
       currentProfile = await this.campaignRepository.getProfileById(
@@ -96,7 +100,7 @@ export class CampaignService {
       );
     }
 
-    return result;
+    return result as Donation;
   }
 
   // Submit a donation to the campaign (root profile)
@@ -104,18 +108,18 @@ export class CampaignService {
     donation: Donation
   ): Promise<Donation | IErrorResponse> {
     const { donorName, amount, currency } = donation;
-    const rootProfile = await this.campaignRepository.getProfileById(null);
+    const rootProfile = await this.campaignRepository.getRootProfile();
     if (!rootProfile) {
       return {
         statusCode: 404,
         error: `Campaign Root Profile not found`,
       };
     }
-    const donationAmountInUSD = amount * this.exchangeRates[currency];
+    const donationAmountInUSD = amount * this.exchangeRates.rates[currency];
     rootProfile.total += donationAmountInUSD;
 
     const newDonation = {
-      id: null, //Will be set by database layer.
+      id: '', //Will be set by database layer.
       donorName,
       amount,
       currency,

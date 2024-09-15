@@ -1,9 +1,9 @@
-import { uuidv4 as uuidv4 } from 'uuid';
 import { Request, Response } from 'express';
 import { CampaignService } from '../services/CampaignService';
 import {
   IDonationResultBody,
   IDonationsResultBody,
+  IErrorMessage,
   IErrorResponse,
   IProfileResultBody,
   IProfilesResultBody,
@@ -24,9 +24,9 @@ export class CampaignController {
 
   public async createProfile(
     req: Request<{}, {}, ICreateProfileRequestBody>,
-    res: Response<IProfileResultBody | IErrorResponse>
+    res: Response<IProfileResultBody | IErrorMessage>
   ): Promise<void> {
-    const profile = req.body.profile;
+    const { profile } = req.body;
     const result = await this.campaignService.createProfile(profile);
 
     if (isErrorReponse(result)) {
@@ -52,8 +52,8 @@ export class CampaignController {
     req: Request<IGetProfileRequestBody>,
     res: Response<IDonationsResultBody>
   ): Promise<void> {
-    const profile = req.params.profile;
-    const donations = await this.campaignService.getProfileDonations(profile);
+    const profileId = req.params.profile;
+    const donations = await this.campaignService.getProfileDonations(profileId);
     res.json({
       donations: donations,
     });
@@ -61,10 +61,10 @@ export class CampaignController {
 
   public async submitProfileDonation(
     req: Request<IGetProfileRequestBody, {}, ISubmitDonationRequestBody>,
-    res: Response<IDonationResultBody | IErrorResponse>
+    res: Response<IDonationResultBody | IErrorMessage>
   ): Promise<void> {
     const profile = req.params.profile;
-    const donation = req.body.donation;
+    const { donation } = req.body;
     const result = await this.campaignService.submitProfileDonation(
       profile,
       donation
@@ -80,9 +80,9 @@ export class CampaignController {
 
   public async submitCampaignDonation(
     req: Request<{}, {}, ISubmitDonationRequestBody>,
-    res: Response<IDonationResultBody | IErrorResponse>
+    res: Response<IDonationResultBody | IErrorMessage>
   ): Promise<void> {
-    const donation = req.body.donation;
+    const { donation } = req.body;
     const result = await this.campaignService.submitCampaignDonation(donation);
     if (isErrorReponse(result)) {
       res.status(result.statusCode).json({ error: result.error });

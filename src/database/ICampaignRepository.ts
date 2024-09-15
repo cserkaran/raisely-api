@@ -1,13 +1,14 @@
-import { uuidv4 as uuidv4 } from 'uuid';
 import { Donation } from '../models/Donation';
 import { Profile } from '../models/Profile';
 
 export interface ICampaignRepository {
-  getProfileById(profileId: uuidv4): Promise<Profile | null>;
+  getRootProfile(): Promise<Profile | null>;
+
+  getProfileById(profileId: string | null): Promise<Profile | null>;
 
   getAllProfiles(): Promise<Array<Profile>>;
 
-  getProfileDonations(profileId: uuidv4): Promise<Array<Donation>>;
+  getProfileDonations(profileId: string): Promise<Array<Donation>>;
 
   addProfile(profile: Profile): Promise<Profile | null>;
 

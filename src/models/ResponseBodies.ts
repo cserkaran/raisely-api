@@ -17,7 +17,11 @@ export interface IDonationsResultBody {
   donations: Array<Donation>;
 }
 
-export interface IErrorResponse {
-  statusCode?: number;
+export interface IErrorMessage {
   error: string;
 }
+
+export interface IErrorResponse extends IErrorMessage{
+  statusCode: number;
+}
+

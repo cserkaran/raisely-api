@@ -1,10 +1,13 @@
 {
     "compilerOptions": {
+      "strict": true,
       "target": "es2022",
       "module": "commonjs",
       "outDir": "dist",
       "esModuleInterop": true,
+      "sourceMap": true
     },
     "include": ["src"],
     "exclude": ["node_modules"],
+    
   }
