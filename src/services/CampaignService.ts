@@ -101,8 +101,11 @@ export class CampaignService {
     while (currentProfile) {
       // Transform donation amount to
       // profiles currency.
-      const donationAmountInProfileCurrency =
-      CampaignService.TransformAmount(amount,currency,currentProfile.currency);
+      const donationAmountInProfileCurrency = CampaignService.TransformAmount(
+        amount,
+        currency,
+        currentProfile.currency
+      );
       currentProfile.total += donationAmountInProfileCurrency;
       currentProfile = await this.campaignRepository.getProfileById(
         currentProfile.parentId
@@ -125,8 +128,11 @@ export class CampaignService {
       };
     }
 
-    const donationAmountInProfileCurrency =
-        CampaignService.TransformAmount(amount,currency,rootProfile.currency);
+    const donationAmountInProfileCurrency = CampaignService.TransformAmount(
+      amount,
+      currency,
+      rootProfile.currency
+    );
 
     rootProfile.total += donationAmountInProfileCurrency;
 
@@ -148,9 +154,14 @@ export class CampaignService {
   }
 
   // Transform amount in from currency to a destination currency.
-  private static TransformAmount(amount: number,fromCurrency: string,toCurrency: string) : number{
-    return (amount * CampaignService.exchangeRates.rates[fromCurrency]) /
-        CampaignService.exchangeRates.rates[toCurrency];
-
+  private static TransformAmount(
+    amount: number,
+    fromCurrency: string,
+    toCurrency: string
+  ): number {
+    return (
+      (amount * CampaignService.exchangeRates.rates[fromCurrency]) /
+      CampaignService.exchangeRates.rates[toCurrency]
+    );
   }
 }
