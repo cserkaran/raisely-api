@@ -10,11 +10,10 @@ https://raisely.notion.site/Technical-Assessment-Backend-Engineer-e6c6df71e14a42
 
 # Design Notes
   Code strucured using MVC pattern with below key components : 
-  
-    - CampaignController for request and response logic for the applications routes
-    - CampaignRouter for wiring the routes
-    - CampaignService for Business Logic 
-    - CampaignRepository for Data Layer Abstraction.
+- CampaignController for request and response logic for the applications routes
+- CampaignRouter for wiring the routes
+- CampaignService for Business Logic
+- CampaignRepository for Data Layer Abstraction.
     
 # Steps to Run and Build 
     npm install
