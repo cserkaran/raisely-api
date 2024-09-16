@@ -95,7 +95,7 @@ export class CampaignService {
     // failures.
     const result = await this.campaignRepository.createDonation(newDonation);
 
-    // Update profile total and parent profiles' totals
+    // Update profile total and parent profiles hierarchy totals
     let currentProfile: Profile | null;
     currentProfile = profile;
     while (currentProfile) {
