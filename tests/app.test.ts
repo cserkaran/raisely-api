@@ -91,12 +91,12 @@ describe('Shoud create Profiles and Donations accurately', () => {
     expect(validateUUID(janeSmithDonationId));
   });
   // POST - Submit an Mark Russo EUR donation to Root Campaign Profile
-  it('should submit Mark RUSSO EUR donation to Root Campaign Profile', async () => {
+  it('should submit Mark Russo EUR donation to Root Campaign Profile', async () => {
     const response = await request(app)
       .post(`/donations`)
       .send({
         donation: {
-          donorName: 'Mark RUSSO',
+          donorName: 'Mark Russo',
           amount: 1000,
           profileId: rootProfileId,
           currency: 'EUR',
@@ -115,7 +115,6 @@ describe('Shoud create Profiles and Donations accurately', () => {
     expect(response.status).toBe(200);
     const rootProfile = response.body.profiles[0];
     const karanProfile = response.body.profiles[1];
-    console.log(rootProfile);
     expect(rootProfile.total).toBe(6594.594594594595);
     expect(karanProfile.total).toBe(3700);
   });
