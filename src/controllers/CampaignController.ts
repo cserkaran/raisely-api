@@ -24,23 +24,6 @@ export class CampaignController {
     this.campaignService = campaignService;
   }
 
-  // Create profile for fundraising
-  public async createProfile(
-    req: Request<{}, {}, ICreateProfileRequestBody>,
-    res: Response<IProfileResultBody | IErrorMessage>
-  ): Promise<void> {
-    const { profile } = req.body;
-    const result = await this.campaignService.createProfile(profile);
-
-    if (isErrorReponse(result)) {
-      res.status(result.statusCode).json({ error: result.error });
-    } else {
-      res.status(201).json({
-        profile: result,
-      });
-    }
-  }
-
   // Get all the fundraising profiles
   public async getAllProfiles(
     req: Request,
@@ -62,6 +45,23 @@ export class CampaignController {
     res.json({
       donations: donations,
     });
+  }
+
+  // Create profile for fundraising
+  public async createProfile(
+    req: Request<{}, {}, ICreateProfileRequestBody>,
+    res: Response<IProfileResultBody | IErrorMessage>
+  ): Promise<void> {
+    const { profile } = req.body;
+    const result = await this.campaignService.createProfile(profile);
+
+    if (isErrorReponse(result)) {
+      res.status(result.statusCode).json({ error: result.error });
+    } else {
+      res.status(201).json({
+        profile: result,
+      });
+    }
   }
 
   // Submit a new donation to the profile with the given Profile ID

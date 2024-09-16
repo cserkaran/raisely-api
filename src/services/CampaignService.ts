@@ -20,6 +20,18 @@ export class CampaignService {
     this.campaignRepository = campaignRepository;
   }
 
+  // Get all the fundraising profiles
+  public async getAllProfiles(): Promise<Array<Profile>> {
+    return this.campaignRepository.getAllProfiles();
+  }
+
+  // Get a single profile's donations
+  public async getProfileDonations(
+    profileId: string
+  ): Promise<Array<Donation>> {
+    return this.campaignRepository.getProfileDonations(profileId);
+  }
+
   // Create profile for fundraising
   public async createProfile(
     profile: Profile
@@ -49,25 +61,6 @@ export class CampaignService {
     return result as Profile;
   }
 
-  // Get all the fundraising profiles
-  public async getProfileById(
-    profileId: string | null
-  ): Promise<Profile | null> {
-    return this.campaignRepository.getProfileById(profileId);
-  }
-
-  // Get all the fundraising profiles
-  public async getAllProfiles(): Promise<Array<Profile>> {
-    return this.campaignRepository.getAllProfiles();
-  }
-
-  // Get a single profile's donations
-  public async getProfileDonations(
-    profileId: string
-  ): Promise<Array<Donation>> {
-    return this.campaignRepository.getProfileDonations(profileId);
-  }
-
   // Submit a new donation to the profile with the given Profile ID
   public async submitProfileDonation(
     profileId: string,
@@ -77,14 +70,17 @@ export class CampaignService {
     if (!profile) {
       return { statusCode: 404, error: 'Profile not found' };
     }
-    return this.submitDonation(donation, profile);
+    return CampaignService.submitDonation(
+      donation,
+      profile,
+      this.campaignRepository
+    );
   }
 
   // Submit a new donation to the overall campaign(root profile)
   public async submitCampaignDonation(
     donation: Donation
   ): Promise<Donation | IErrorResponse> {
-    const { donorName, amount, currency } = donation;
     const rootProfile = await this.campaignRepository.getRootProfile();
     if (!rootProfile) {
       return {
@@ -92,13 +88,18 @@ export class CampaignService {
         error: `Campaign Root Profile not found`,
       };
     }
-    return this.submitDonation(donation, rootProfile);
+    return CampaignService.submitDonation(
+      donation,
+      rootProfile,
+      this.campaignRepository
+    );
   }
 
   // Submit donation to a given profile.
-  private async submitDonation(
+  private static async submitDonation(
     donation: Donation,
-    profile: Profile
+    profile: Profile,
+    campaignRepository: ICampaignRepository
   ): Promise<Donation> {
     const { donorName, amount, currency } = donation;
 
@@ -115,7 +116,7 @@ export class CampaignService {
     // These two operations need to be part of one transaction
     // or we can build a distributed payment processor to handle
     // failures.
-    const result = await this.campaignRepository.createDonation(newDonation);
+    const result = await campaignRepository.createDonation(newDonation);
 
     // Update profile total and parent profiles hierarchy totals
     let currentProfile: Profile | null;
@@ -129,13 +130,14 @@ export class CampaignService {
         currentProfile.currency
       );
       currentProfile.total += donationAmountInProfileCurrency;
-      currentProfile = await this.campaignRepository.getProfileById(
+      currentProfile = await campaignRepository.getProfileById(
         currentProfile.parentId
       );
     }
 
     return result as Donation;
   }
+
   // Transform amount in from currency to a destination currency.
   private static TransformAmount(
     amount: number,
