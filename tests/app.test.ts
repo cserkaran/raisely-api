@@ -93,12 +93,12 @@ describe('Shoud create Profiles and Donations accurately', () => {
   // POST - Submit an Mark Russo EUR donation to Root Campaign Profile
   it('should submit Mark RUSSO EUR donation to Root Campaign Profile', async () => {
     const response = await request(app)
-      .post(`/profiles/${rootProfileId}/donations`)
+      .post(`/donations`)
       .send({
         donation: {
           donorName: 'Mark RUSSO',
           amount: 1000,
-          profileId: karanProfileId,
+          profileId: rootProfileId,
           currency: 'EUR',
         },
       })

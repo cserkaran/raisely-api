@@ -77,7 +77,29 @@ export class CampaignService {
     if (!profile) {
       return { statusCode: 404, error: 'Profile not found' };
     }
+    return this.submitDonation(donation, profile);
+  }
 
+  // Submit a new donation to the overall campaign(root profile)
+  public async submitCampaignDonation(
+    donation: Donation
+  ): Promise<Donation | IErrorResponse> {
+    const { donorName, amount, currency } = donation;
+    const rootProfile = await this.campaignRepository.getRootProfile();
+    if (!rootProfile) {
+      return {
+        statusCode: 404,
+        error: `Campaign Root Profile not found`,
+      };
+    }
+    return this.submitDonation(donation, rootProfile);
+  }
+
+  // Submit donation to a given profile.
+  private async submitDonation(
+    donation: Donation,
+    profile: Profile
+  ): Promise<Donation> {
     const { donorName, amount, currency } = donation;
 
     const newDonation = {
@@ -85,7 +107,7 @@ export class CampaignService {
       donorName,
       amount,
       currency,
-      profileId: profileId,
+      profileId: profile.id,
     };
 
     // charge card here
@@ -114,45 +136,6 @@ export class CampaignService {
 
     return result as Donation;
   }
-
-  // Submit a new donation to the overall campaign(root profile)
-  public async submitCampaignDonation(
-    donation: Donation
-  ): Promise<Donation | IErrorResponse> {
-    const { donorName, amount, currency } = donation;
-    const rootProfile = await this.campaignRepository.getRootProfile();
-    if (!rootProfile) {
-      return {
-        statusCode: 404,
-        error: `Campaign Root Profile not found`,
-      };
-    }
-
-    const donationAmountInProfileCurrency = CampaignService.TransformAmount(
-      amount,
-      currency,
-      rootProfile.currency
-    );
-
-    rootProfile.total += donationAmountInProfileCurrency;
-
-    const newDonation = {
-      id: '', //Will be set by database layer.
-      donorName,
-      amount,
-      currency,
-      profileId: rootProfile.id,
-    };
-
-    // charge card here
-    // and then, save the donation to database.
-    // These two operations need to be part of one transaction
-    // or we can build a distributed payment processor to handle
-    // failures.
-    const result = await this.campaignRepository.createDonation(newDonation);
-    return result as Donation;
-  }
-
   // Transform amount in from currency to a destination currency.
   private static TransformAmount(
     amount: number,
