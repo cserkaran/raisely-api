@@ -14,7 +14,7 @@ https://raisely.notion.site/Technical-Assessment-Backend-Engineer-e6c6df71e14a42
     - CampaignController for request and response logic for the applications routes
     - CampaignRouter for wiring the routes
     - CampaignService for Business Logic 
-    - Campaign Repository for Data Layer Abstraction.
+    - CampaignRepository for Data Layer Abstraction.
     
 # Steps to Run and Build 
     npm install
