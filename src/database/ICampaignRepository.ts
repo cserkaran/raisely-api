@@ -1,7 +1,7 @@
 import { Donation } from '../models/Donation';
 import { Profile } from '../models/Profile';
 
-// Repository interface to abstract data access logic, 
+// Repository interface to abstract data access logic,
 // providing a clean API for accessing data and separating concerns between the data
 // layer and the business logic layer.
 export interface ICampaignRepository {

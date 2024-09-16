@@ -17,8 +17,8 @@ app.use(express.json());
 app.use(campaignRoute.createRouter());
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error('Express Error:', err.message);
-    res.status(500).send('Internal Server Error');
+  console.error('Express Error:', err.message);
+  res.status(500).send('Internal Server Error');
 });
 
 export default app;

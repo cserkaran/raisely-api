@@ -23,7 +23,9 @@ export class CampaignRepository implements ICampaignRepository {
   }
 
   // Get Profile for a given Profile ID
-  public async getProfileById(profileId: string | null): Promise<Profile | null> {
+  public async getProfileById(
+    profileId: string | null
+  ): Promise<Profile | null> {
     let profile = this.profiles.find((p) => p.id == profileId);
     if (profile == undefined) {
       return null;
@@ -40,7 +42,7 @@ export class CampaignRepository implements ICampaignRepository {
   public async getProfileDonations(
     profileId: string
   ): Promise<Array<Donation>> {
-    const donations = this.donations.filter(d => d.profileId === profileId);
+    const donations = this.donations.filter((d) => d.profileId === profileId);
     return donations;
   }
 
