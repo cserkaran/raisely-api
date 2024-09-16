@@ -4,7 +4,6 @@ import {
   IDonationResultBody,
   IDonationsResultBody,
   IErrorMessage,
-  IErrorResponse,
   IProfileResultBody,
   IProfilesResultBody,
 } from '../models/ResponseBodies';
@@ -36,7 +35,7 @@ export class CampaignController {
     if (isErrorReponse(result)) {
       res.status(result.statusCode).json({ error: result.error });
     } else {
-      res.json({
+      res.status(201).json({
         profile: result,
       });
     }
@@ -79,7 +78,7 @@ export class CampaignController {
     if (isErrorReponse(result)) {
       res.status(result.statusCode).json({ error: result.error });
     } else {
-      res.json({
+      res.status(201).json({
         donation: result,
       });
     }
@@ -95,7 +94,7 @@ export class CampaignController {
     if (isErrorReponse(result)) {
       res.status(result.statusCode).json({ error: result.error });
     } else {
-      res.json({
+      res.status(201).json({
         donation: result,
       });
     }

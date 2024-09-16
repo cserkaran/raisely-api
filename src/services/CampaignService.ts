@@ -3,8 +3,8 @@ import { Donation } from '../models/Donation';
 import { ICampaignRepository } from '../database/ICampaignRepository';
 import { IErrorResponse } from '../models/ResponseBodies';
 
-// Contains methods for business logic. It calls the data access layer(Repository) 
-// and model layer to perform data operations. 
+// Contains methods for business logic. It calls the data access layer(Repository)
+// and model layer to perform data operations.
 export class CampaignService {
   private campaignRepository: ICampaignRepository;
   private exchangeRates: ExchangeRateData = {
@@ -14,7 +14,7 @@ export class CampaignService {
       EUR: 1.18,
     },
   };
-  
+
   // Class Constructor
   constructor(campaignRepository: ICampaignRepository) {
     this.campaignRepository = campaignRepository;
@@ -91,6 +91,11 @@ export class CampaignService {
       profileId: profileId,
     };
 
+    // charge card here
+    // and then, save the donation to database.
+    // These two operations need to be part of one transaction
+    // or we can build a distributed payment processor to handle
+    // failures.
     const result = await this.campaignRepository.createDonation(newDonation);
 
     // Update profile total and parent profiles' totals
@@ -106,7 +111,7 @@ export class CampaignService {
     return result as Donation;
   }
 
-   // Submit a new donation to the overall campaign(root profile)
+  // Submit a new donation to the overall campaign(root profile)
   public async submitCampaignDonation(
     donation: Donation
   ): Promise<Donation | IErrorResponse> {
@@ -129,6 +134,11 @@ export class CampaignService {
       profileId: rootProfile.id,
     };
 
+    // charge card here
+    // and then, save the donation to database.
+    // These two operations need to be part of one transaction
+    // or we can build a distributed payment processor to handle
+    // failures.
     const result = await this.campaignRepository.createDonation(newDonation);
     return donation;
   }
