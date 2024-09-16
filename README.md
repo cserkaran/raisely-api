@@ -16,6 +16,9 @@ https://raisely.notion.site/Technical-Assessment-Backend-Engineer-e6c6df71e14a42
 - CampaignRepository for Data Layer Abstraction.
     
 # Steps to Run and Build 
+Clone the Repository at https://github.com/cserkaran/raisely-api-sample.git, 
+open terminal/Command Line at the Cloned repository folder, then run below scripts :
+
     npm install
     npm run build
     npm run start
