@@ -10,7 +10,7 @@ describe('GET /', () => {
   });
 });
 
-describe('API endpoint /profiles', () => {
+describe('Shoud create Profiles and Donations accurately', () => {
   let rootProfileId: string;
   let karanProfileId: string;
   let janeSmithDonationId: string;
@@ -74,7 +74,7 @@ describe('API endpoint /profiles', () => {
     expect(validateUUID(karanProfileId));
   });
   // POST - Submit an Jane Smith AUD donation to Karan's Fund Raising Profile
-  it('should submit Jane Smith AUD donation to Karan Fund Raising Profile', async () => {
+  it('should submit Jane Smith AUD donation to Karan Fund Raising Profile in USD', async () => {
     const response = await request(app)
       .post(`/profiles/${karanProfileId}/donations`)
       .send({
@@ -116,7 +116,7 @@ describe('API endpoint /profiles', () => {
     const rootProfile = response.body.profiles[0];
     const karanProfile = response.body.profiles[1];
     console.log(rootProfile);
-    expect(rootProfile.total).toBe(5294.594594594595);
+    expect(rootProfile.total).toBe(6594.594594594595);
     expect(karanProfile.total).toBe(3700);
   });
 });

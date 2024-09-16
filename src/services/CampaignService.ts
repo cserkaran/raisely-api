@@ -7,7 +7,7 @@ import { IErrorResponse } from '../models/ResponseBodies';
 // and model layer to perform data operations.
 export class CampaignService {
   private campaignRepository: ICampaignRepository;
-  private exchangeRates: ExchangeRateData = {
+  private static exchangeRates: ExchangeRateData = {
     rates: {
       USD: 1,
       AUD: 0.74,
@@ -79,9 +79,6 @@ export class CampaignService {
     }
 
     const { donorName, amount, currency } = donation;
-    const donationAmountInProfileCurrency =
-      (amount * this.exchangeRates.rates[currency]) /
-      this.exchangeRates.rates[profile.currency];
 
     const newDonation = {
       id: '', // will be set by database layer.
@@ -102,6 +99,10 @@ export class CampaignService {
     let currentProfile: Profile | null;
     currentProfile = profile;
     while (currentProfile) {
+      // Transform donation amount to
+      // profiles currency.
+      const donationAmountInProfileCurrency =
+      CampaignService.TransformAmount(amount,currency,currentProfile.currency);
       currentProfile.total += donationAmountInProfileCurrency;
       currentProfile = await this.campaignRepository.getProfileById(
         currentProfile.parentId
@@ -123,8 +124,11 @@ export class CampaignService {
         error: `Campaign Root Profile not found`,
       };
     }
-    const donationAmountInUSD = amount * this.exchangeRates.rates[currency];
-    rootProfile.total += donationAmountInUSD;
+
+    const donationAmountInProfileCurrency =
+        CampaignService.TransformAmount(amount,currency,rootProfile.currency);
+
+    rootProfile.total += donationAmountInProfileCurrency;
 
     const newDonation = {
       id: '', //Will be set by database layer.
@@ -140,6 +144,13 @@ export class CampaignService {
     // or we can build a distributed payment processor to handle
     // failures.
     const result = await this.campaignRepository.createDonation(newDonation);
-    return donation;
+    return result as Donation;
+  }
+
+  // Transform amount in from currency to a destination currency.
+  private static TransformAmount(amount: number,fromCurrency: string,toCurrency: string) : number{
+    return (amount * CampaignService.exchangeRates.rates[fromCurrency]) /
+        CampaignService.exchangeRates.rates[toCurrency];
+
   }
 }
