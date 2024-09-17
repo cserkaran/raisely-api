@@ -1,6 +1,10 @@
 # Raisely Technical Assessment
 https://raisely.notion.site/Technical-Assessment-Backend-Engineer-e6c6df71e14a42cc9dbeb78a2a9856c4
 
+# Prerequisites 
+- Node v16.14.2
+- npm 8.5.0
+
 # Tech Stack
   NodeJS, Express, Typescript and Jest.
   
